@@ -2,6 +2,7 @@
 
 from plenum.common.test_network_setup import TestNetworkSetup
 
+from base64 import urlsafe_b64encode
 from hashlib import blake2b
 from indy_common.config_util import getConfig
 from indy_common.config_helper import ConfigHelper, NodeConfigHelper
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.disabled = True
 
-    TestNetworkSetup.getSigningSeed = lambda name: blake2b(name.encode(), key=key, digest_size=16).hexdigest().encode()\
+    TestNetworkSetup.getSigningSeed = lambda name: urlsafe_b64encode(blake2b(name.encode(), key=key, digest_size=24).digest())\
         if key != b'' else ('0' * (32 - len(name)) + name).encode()
 
     TestNetworkSetup.bootstrapTestNodes(getConfig(), portsStart, nodeParamsFileName,
